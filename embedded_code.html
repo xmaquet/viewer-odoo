@@ -1,7 +1,46 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/konva/8.3.1/konva.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/xmaquet/viewer-odoo@refs/heads/main/ts-setup.js"></script>
-<div>
-        <input type="file" id="logo-upload" accept="image/*">
-        <div id="tshirt-stage" style="border: 1px solid #ccc; width: 650px; height: 650px; margin: 20px auto;"></div>
-        <div id="image-details" style="margin-top: 10px;"></div>
-</div>
+
+<style>
+        /* Style pour le conteneur du canevas */
+        #tshirt-stage {
+            border: 1px solid #ccc;
+            width: 650px;
+            height: 650px;
+            margin: 20px auto;
+            background-color: transparent; /* Fond transparent */
+        }
+
+        /* Style pour le bouton personnalisé */
+        .custom-file-upload {
+            display: inline-block;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #0056b3;
+        }
+
+        /* Masquer l'input file d'origine */
+        #logo-upload {
+            display: none;
+        }
+    </style>
+<div class="container mt-5">
+        <div class="form-group">
+            <label for="logo-upload" class="font-weight-bold">Télécharger une image :</label>
+            <!-- Bouton personnalisé pour déclencher l'input file -->
+            <label for="logo-upload" class="custom-file-upload">
+                Choisir un fichier
+            </label>
+            <input type="file" id="logo-upload" accept="image/*">
+        </div>
+        <div id="tshirt-stage"></div>
+        <div id="image-details" class="mt-3"></div>
+    </div>
