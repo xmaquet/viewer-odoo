@@ -15,10 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let logoHeight = 100;
     let logoRotation = 0;
     let tr = null;
-    let textNode = null;
 
     function updateTshirtImage() {
-        const activeCarouselItem = document.querySelector('.carousel-item.active img');
+        const activeCarouselItem = parent.document.querySelector('.carousel-item.active img');
         if (activeCarouselItem) {
             tshirtImage.src = activeCarouselItem.src;
             tshirtImage.onload = function () {
@@ -62,10 +61,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     layer.add(logo);
                     layer.draw();
                 }
-                if (textNode) {
-                    layer.add(textNode);
-                    layer.draw();
-                }
                 layer.draw();
             };
         }
@@ -87,76 +82,47 @@ document.addEventListener('DOMContentLoaded', function () {
         layer.draw();
     }
 
-    document.getElementById('logo-upload').addEventListener('change', function (event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = function () {
-                logoImage = img;
-                const aspectRatio = img.width / img.height;
-                logoWidth = 100;
-                logoHeight = logoWidth / aspectRatio;
-                updateTshirtImage();
+    const logoUploadLabel = document.querySelector('label[for="logo-upload"]');
+    const logoUpload = document.getElementById('logo-upload');
+    if (logoUploadLabel && logoUpload) {
+        logoUploadLabel.addEventListener('click', function () {
+            logoUpload.click();
+        });
 
-                const fileSizeInKB = (file.size / 1024).toFixed(2);
-                const estimatedDPI = 72;
-                const widthInInches = img.width / estimatedDPI;
-                const heightInInches = img.height / estimatedDPI;
-                document.getElementById('image-details').innerText = `Dimensions: ${img.width}x${img.height}px, Poids: ${fileSizeInKB} Ko, Définition estimée: ${estimatedDPI} DPI (Largeur: ${widthInInches.toFixed(2)} pouces, Hauteur: ${heightInInches.toFixed(2)} pouces)`;
+        logoUpload.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function () {
+                    logoImage = img;
+                    const aspectRatio = img.width / img.height;
+                    logoWidth = 100;
+                    logoHeight = logoWidth / aspectRatio;
+                    updateTshirtImage();
+
+                    const fileSizeInKB = (file.size / 1024).toFixed(2);
+                    const estimatedDPI = 72;
+                    const widthInInches = img.width / estimatedDPI;
+                    const heightInInches = img.height / estimatedDPI;
+                    document.getElementById('image-details').innerText = `Dimensions: ${img.width}x${img.height}px, Poids: ${fileSizeInKB} Ko, Définition estimée: ${estimatedDPI} DPI (Largeur: ${widthInInches.toFixed(2)} pouces, Hauteur: ${heightInInches.toFixed(2)} pouces)`;
+                };
             };
-        };
-        reader.readAsDataURL(file);
-    });
-
-    document.getElementById('add-text').addEventListener('click', function () {
-        const text = prompt('Entrez le texte à ajouter :');
-        if (text) {
-            textNode = new Konva.Text({
-                text: text,
-                x: 50,
-                y: 50,
-                fontSize: 24,
-                fontFamily: 'Calibri',
-                fill: 'black',
-                draggable: true,
-            });
-            textNode.on('dragend', function () {
-                textNode.position({
-                    x: textNode.x(),
-                    y: textNode.y(),
-                });
-            });
-            layer.add(textNode);
-            layer.draw();
-        }
-    });
-
-    document.getElementById('change-color').addEventListener('change', function (event) {
-        const color = event.target.value;
-        if (logoImage) {
-            const logo = layer.findOne('Image');
-            if (logo) {
-                logo.filters([Konva.Filters.RGB]);
-                logo.red(color.substring(1, 3));
-                logo.green(color.substring(3, 5));
-                logo.blue(color.substring(5, 7));
-                layer.draw();
-            }
-        }
-    });
+            reader.readAsDataURL(file);
+        });
+    }
 
     const observer = new MutationObserver(updateTshirtImage);
-    observer.observe(document.querySelector('.carousel'), {
+    observer.observe(parent.document.querySelector('.carousel'), {
         childList: true,
         subtree: true,
         attributes: true,
     });
 
     stage.on('click tap', function (e) {
-        if (tr && !e.target.hasName('Image') && !e.target.hasName('Text')) {
-            console.log('Clicked outside logo or text');
+        if (tr && !e.target.hasName('Image')) {
+            console.log('Clicked outside logo');
             tr.destroy();
             tr = null;
             layer.draw();
