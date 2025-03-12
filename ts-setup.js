@@ -78,36 +78,42 @@ document.addEventListener('DOMContentLoaded', function () {
         layer.draw();
     }
 
-    document.getElementById('logo-upload').addEventListener('change', function (event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = function () {
-                logoImage = img;
-                const aspectRatio = img.width / img.height;
-                logoWidth = 100;
-                logoHeight = logoWidth / aspectRatio;
-                updateTshirtImage();
+    const logoUpload = document.getElementById('logo-upload');
+    if (logoUpload) {
+        logoUpload.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function () {
+                    logoImage = img;
+                    const aspectRatio = img.width / img.height;
+                    logoWidth = 100;
+                    logoHeight = logoWidth / aspectRatio;
+                    updateTshirtImage();
 
-                // Afficher les caractéristiques de l'image
-                const fileSizeInKB = (file.size / 1024).toFixed(2);
-                const estimatedDPI = 72; // Valeur par défaut pour les images web
-                const widthInInches = img.width / estimatedDPI;
-                const heightInInches = img.height / estimatedDPI;
-                document.getElementById('image-details').innerText = `Dimensions: ${img.width}x${img.height}px, Poids: ${fileSizeInKB} Ko, Définition estimée: ${estimatedDPI} DPI (Largeur: ${widthInInches.toFixed(2)} pouces, Hauteur: ${heightInInches.toFixed(2)} pouces)`;
+                    // Afficher les caractéristiques de l'image
+                    const fileSizeInKB = (file.size / 1024).toFixed(2);
+                    const estimatedDPI = 72; // Valeur par défaut pour les images web
+                    const widthInInches = img.width / estimatedDPI;
+                    const heightInInches = img.height / estimatedDPI;
+                    document.getElementById('image-details').innerText = `Dimensions: ${img.width}x${img.height}px, Poids: ${fileSizeInKB} Ko, Définition estimée: ${estimatedDPI} DPI (Largeur: ${widthInInches.toFixed(2)} pouces, Hauteur: ${heightInInches.toFixed(2)} pouces)`;
+                };
             };
-        };
-        reader.readAsDataURL(file);
-    });
+            reader.readAsDataURL(file);
+        });
+    }
 
-    const observer = new MutationObserver(updateTshirtImage);
-    observer.observe(document.querySelector('.carousel'), {
-        childList: true,
-        subtree: true,
-        attributes: true,
-    });
+    const carousel = document.querySelector('.carousel');
+    if (carousel) {
+        const observer = new MutationObserver(updateTshirtImage);
+        observer.observe(carousel, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+        });
+    }
 
     stage.on('click tap', function (e) {
         if (tr && !e.target.hasName('Image')) {
@@ -118,19 +124,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    const intersectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                updateTshirtImage();
-            }
+    const tshirtStage = document.getElementById('tshirt-stage');
+    if (tshirtStage) {
+        const intersectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    updateTshirtImage();
+                }
+            });
+        }, {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
         });
-    }, {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    });
 
-    intersectionObserver.observe(document.getElementById('tshirt-stage'));
+        intersectionObserver.observe(tshirtStage);
+    }
 
     window.addEventListener('scroll', updateTshirtImage);
 
