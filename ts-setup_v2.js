@@ -114,11 +114,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const observer = new MutationObserver(updateTshirtImage);
-    observer.observe(parent.document.querySelector('.carousel'), {
-        childList: true,
-        subtree: true,
-        attributes: true,
-    });
+    const carousel = parent.document.querySelector('.carousel');
+    if (carousel) {
+        observer.observe(carousel, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+        });
+    }
 
     stage.on('click tap', function (e) {
         if (tr && !e.target.hasName('Image')) {
